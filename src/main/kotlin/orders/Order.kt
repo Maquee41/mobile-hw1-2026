@@ -1,7 +1,7 @@
 package orders
 
 class Order(
-    val id: Int
+    val id: Int,
 ) : PriceCalculator {
 
     private val _products: MutableList<Product> = mutableListOf()
@@ -18,6 +18,7 @@ class Order(
      */
     fun addProduct(product: Product?) {
         // TODO: add product to _products, ignore null
+        product?.let { _products.add(it) }
     }
 
     /**
@@ -25,6 +26,7 @@ class Order(
      */
     fun removeProductById(productId: Int) {
         // TODO: remove product from _products by id
+        _products.removeIf { it.id == productId }
     }
 
     /**
@@ -32,7 +34,7 @@ class Order(
      */
     override fun calculateTotal(): Int {
         // TODO: sum the prices of all products
-        return 0
+        return _products.sumOf { it.price }
     }
 
     /**
@@ -41,6 +43,8 @@ class Order(
      */
     fun pay() {
         // TODO: throw if _products is empty, otherwise set status to Paid
+        if (_products.isEmpty()) throw IllegalStateException()
+        status = OrderStatus.Paid
     }
 
     /**
@@ -49,5 +53,6 @@ class Order(
      */
     fun cancel(reason: String?) {
         // TODO: set status to Cancelled with reason (default "Unknown reason" if null)
+        status = OrderStatus.Cancelled(reason ?: "Unknown reason")
     }
 }
