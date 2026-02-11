@@ -1,7 +1,7 @@
 package orders
 
-sealed class OrderStatus {
-    object Created : OrderStatus()
-    object Paid : OrderStatus()
-    data class Cancelled(val reason: String) : OrderStatus()
+sealed interface OrderStatus<out T> {
+    data object Created : OrderStatus<Nothing>
+    data object Paid : OrderStatus<Nothing>
+    data class Cancelled<T>(val reason: T) : OrderStatus<T>
 }
