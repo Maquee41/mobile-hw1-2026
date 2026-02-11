@@ -2,6 +2,7 @@ package orders
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.lang.UnsupportedOperationException
 
 class OrderTest {
 
@@ -34,6 +35,19 @@ class OrderTest {
     }
 
     @Test
+    fun `remove only first product when product id repeats`() {
+        val order = Order(1)
+        val product1 = (Product(1, "A", 100))
+        val product2 = (Product(1, "B", 100))
+        order.addProduct(product1)
+        order.addProduct(product2)
+
+        order.removeProductById(product1.id)
+
+        assertTrue(order.products.contains(product2))
+    }
+
+    @Test
     fun `pay empty order throws exception`() {
         val order = Order(1)
 
@@ -59,6 +73,16 @@ class OrderTest {
 
         val status = order.status as OrderStatus.Cancelled
         assertEquals("Unknown reason", status.reason)
+    }
+
+    @Test
+    fun `status gives correct reason after cancel`() {
+        val order = Order(1)
+        val cancelReason = "I don't have money"
+        order.cancel(cancelReason)
+
+        val status = order.status as OrderStatus.Cancelled
+        assertEquals(cancelReason, status.reason)
     }
 
     @Test
@@ -93,5 +117,36 @@ class OrderTest {
         }
 
         assertTrue(logs.isNotEmpty())
+    }
+
+    @Test
+    fun `when discount is more than 100 percent, new price is 0`() {
+        val order = Order(1)
+        order.addProduct(Product(1, "A", 150))
+
+        order.applyDiscount(155)
+
+        assertEquals(0, order.calculateTotal())
+    }
+
+    @Test
+    fun `product list is empty after products in order are paid`() {
+        val order = Order(1)
+        order.addProduct(Product(1, "A", 100))
+        order.addProduct(Product(2, "B", 200))
+
+        order.pay()
+
+        assertTrue(order.products.isEmpty())
+    }
+
+    @Test
+    fun `Can't add products to order without method addProduct`(){
+        val order = Order(1)
+        order.addProduct(Product(1, "A", 100))
+
+        assertThrows(UnsupportedOperationException::class.java) {
+            (order.products as MutableList).add(Product(1,"A",100))
+        }
     }
 }
