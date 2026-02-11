@@ -17,21 +17,26 @@ class Order(
      * If the product is null, it should be ignored.
      */
     fun addProduct(product: Product?) {
-        // TODO: add product to _products, ignore null
+        product?.let { _products.add(it) }
     }
 
     /**
      * Removes the first product matching [productId].
      */
     fun removeProductById(productId: Int) {
-        // TODO: remove product from _products by id
+        if (_products.isNotEmpty()) {
+            _products.removeIf { it.id == productId }
+        }
     }
 
     /**
      * Returns the total price of all products in the order.
      */
     override fun calculateTotal(): Int {
-        // TODO: sum the prices of all products
+        if (_products.isNotEmpty()) {
+            val sum = _products.sumOf { it.price }
+            return sum
+        }
         return 0
     }
 
@@ -40,7 +45,9 @@ class Order(
      * Throws [IllegalStateException] if the order has no products.
      */
     fun pay() {
-        // TODO: throw if _products is empty, otherwise set status to Paid
+        if (_products.isNotEmpty()) {
+            status = OrderStatus.Paid
+        } else throw IllegalStateException()
     }
 
     /**
@@ -48,6 +55,7 @@ class Order(
      * If [reason] is null, use "Unknown reason".
      */
     fun cancel(reason: String?) {
-        // TODO: set status to Cancelled with reason (default "Unknown reason" if null)
+        val msg = reason ?: run { "Unknown reason" }
+        status = OrderStatus.Cancelled(msg)
     }
 }
