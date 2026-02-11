@@ -8,6 +8,16 @@ package orders
  *   - Cancelled -> "Order {id} is cancelled: {reason}"
  */
 fun processOrder(order: Order): String {
-    // TODO: use when to return the appropriate string
-    return ""
+
+    return when(order.status){
+        is OrderStatus.Cancelled -> {
+            "Order ${order.id} is cancelled: ${(order.status as OrderStatus.Cancelled).reason}"
+        }
+        OrderStatus.Created -> {
+            "Order ${order.id} is new"
+        }
+        OrderStatus.Paid -> {
+            "Order ${order.id} is paid"
+        }
+    }
 }
