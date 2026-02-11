@@ -6,48 +6,50 @@ class Order(
 
     private val _products: MutableList<Product> = mutableListOf()
 
-    /** Read-only view of products in the order. */
+    /** Список только для чтения извне */
     val products: List<Product> get() = _products.toList()
 
     var status: OrderStatus = OrderStatus.Created
         private set
 
-    /**
-     * Adds a product to the order.
-     * If the product is null, it should be ignored.
-     */
+    /** Добавляем товар, если он не пустой */
     fun addProduct(product: Product?) {
-        // TODO: add product to _products, ignore null
+        // Если товар не null, то выполняется код внутри let
+        product?.let { _products.add(it) }
     }
 
     /**
-     * Removes the first product matching [productId].
+     * Ищем первое вхождение с указанным id и удаляем этот товар
      */
     fun removeProductById(productId: Int) {
-        // TODO: remove product from _products by id
+        val product = _products.find { it.id == productId }
+        product?.let {
+            _products.remove(it)
+        }
     }
 
     /**
-     * Returns the total price of all products in the order.
+     * Находим и возвращаем суммарную цену всех товаров
      */
     override fun calculateTotal(): Int {
-        // TODO: sum the prices of all products
-        return 0
+        val totalPrice = _products.sumOf { it.price }
+        return totalPrice
     }
 
     /**
-     * Marks the order as paid.
-     * Throws [IllegalStateException] if the order has no products.
+     * Помечаем заказ оплаченным, или выбрасываем исключние, если он пустой
      */
     fun pay() {
-        // TODO: throw if _products is empty, otherwise set status to Paid
+        if (_products.isEmpty()) {
+            throw IllegalStateException("Cannot pay for an empty order")
+        }
+        status = OrderStatus.Paid
     }
 
     /**
-     * Cancels the order with the given reason.
-     * If [reason] is null, use "Unknown reason".
+     * Отменяем заказ с указанной причиной, или с неизвестной причиной
      */
     fun cancel(reason: String?) {
-        // TODO: set status to Cancelled with reason (default "Unknown reason" if null)
+        status = OrderStatus.Cancelled(reason = reason ?: "Unknown reason")
     }
 }

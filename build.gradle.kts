@@ -2,6 +2,10 @@ plugins {
     kotlin("jvm") version "2.1.0"
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 group = "orders"
 version = "1.0"
 

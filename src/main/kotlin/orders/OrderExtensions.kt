@@ -1,18 +1,26 @@
 package orders
 
 /**
- * Applies a percentage discount to every product in the order.
- *
- * Hint: use [products] to read the current list, [removeProductById] and
- * [addProduct] to replace each product with a discounted copy.
- * Use [Product.copy] to create a new product with a modified price.
- *
- * @param discountPercent discount percentage (e.g. 10 means 10%)
- * @param logger optional callback invoked with a log message for each product
+ * Применяем процентную скидку к каждому товару в заказе
  */
 fun Order.applyDiscount(
     discountPercent: Int,
     logger: ((String) -> Unit)? = null
 ) {
-    // TODO: apply discount to each product using extension + scoped functions
+    this.products.forEach { product ->
+        // Удаляем старый товар
+        this.removeProductById(product.id)
+
+        // Считаем новую цену товара
+        val newPrice = product.price * (100 - discountPercent) / 100
+
+        // Создаем товар с новой ценой, используя метод copy data-класса
+        val discountedProduct = product.copy(price = newPrice)
+
+        // Возвращаем товар
+        this.addProduct(discountedProduct)
+
+        // Логируем, если логгер передан
+        logger?.invoke("Product ${product.name} discounted to $newPrice")
+    }
 }
